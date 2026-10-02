@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Treyding Daftari</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f4ee;--card:#fff;--ink:#16140f;--mute:#7a7467;--line:#e6e1d4;--gold:#a8812a;--up:#0f8a5f;--down:#d0392f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0b0d;--card:#141417;--ink:#f1ede2;--mute:#8d887b;--line:#25252a;--gold:#d4af5f;--up:#2fd18f;--down:#ff5b50}}
+:root[data-theme="dark"]{--bg:#0b0b0d;--card:#141417;--ink:#f1ede2;--mute:#8d887b;--line:#25252a;--gold:#d4af5f;--up:#2fd18f;--down:#ff5b50}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:28px 18px 60px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px}
+h1{font-family:'Playfair Display',Georgia,serif;font-weight:600;font-size:30px;margin:0;letter-spacing:.3px}
+h1 span{color:var(--gold)}
+.sub{color:var(--mute);font-size:13px;margin-top:2px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.stat small{color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:1px}
+.stat b{display:block;font-size:26px;margin-top:6px;font-weight:700}
+.up{color:var(--up)}.down{color:var(--down)}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);margin:0 0 14px;font-weight:600}
+form{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));align-items:end}
+label{font-size:12px;color:var(--mute);display:block;margin-bottom:5px}
+input,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14px}
+input:focus,select:focus{outline:none;border-color:var(--gold)}
+.btn{padding:12px 18px;border:0;border-radius:10px;background:linear-gradient(135deg,#e6c36f,#a8812a);color:#1a1405;font-weight:700;cursor:pointer;font:inherit;font-weight:700}
+.btn:hover{filter:brightness(1.08)}
+.ghost{background:none;border:1px solid var(--line);color:var(--mute);border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:13px}
+.seg{display:flex;gap:6px}
+.seg label{flex:1;margin:0;cursor:pointer}
+.seg input{display:none}
+.seg span{display:block;text-align:center;padding:11px;border-radius:10px;border:1px solid var(--line);font-weight:600;font-size:14px;color:var(--mute)}
+.seg input:checked+span.b{background:var(--up);border-color:var(--up);color:#fff}
+.seg input:checked+span.s{background:var(--down);border-color:var(--down);color:#fff}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+th{text-align:left;color:var(--mute);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:1px;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:12px 10px;border-bottom:1px solid var(--line)}
+.tag{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.tag.buy{background:color-mix(in srgb,var(--up) 18%,transparent);color:var(--up)}
+.tag.sell{background:color-mix(in srgb,var(--down) 18%,transparent);color:var(--down)}
+.x{background:none;border:0;color:var(--mute);cursor:pointer;font-size:16px}
+.x:hover{color:var(--down)}
+.empty{text-align:center;color:var(--mute);padding:30px 0}
+svg{width:100%;height:170px;display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <div><h1>Treyding <span>Daftari</span></h1><div class="sub">Har bir savdoni yozing — natijani nazorat qiling</div></div>
+ <button class="ghost" id="clr">Tozalash</button>
+</header>
+
+<div class="grid" id="stats"></div>
+
+<div class="card" style="margin-bottom:18px">
+ <h2>Yangi savdo</h2>
+ <form id="f">
+  <div><label>Sana</label><input type="date" id="d" required></div>
+  <div><label>Timeframe</label>
+   <select id="tf"><option>M1</option><option>M5</option><option>M15</option><option selected>M30</option><option>H1</option><option>H4</option><option>D1</option><option>W1</option></select></div>
+  <div><label>Lot</label><input type="number" id="lot" step="0.01" min="0" placeholder="0.10" required></div>
+  <div><label>Yo'nalish</label>
+   <div class="seg"><label><input type="radio" name="s" value="buy" checked><span class="b">BUY</span></label><label><input type="radio" name="s" value="sell"><span class="s">SELL</span></label></div></div>
+  <div><label>Foyda (+) / Zarar (−), $</label><input type="number" id="pl" step="0.01" placeholder="+25 yoki -10" required></div>
+  <button class="btn" type="submit">Qo'shish</button>
+ </form>
+</div>
+
+<div class="card" style="margin-bottom:18px">
+ <h2>Balans egri chizig'i</h2>
+ <div id="chart"></div>
+</div>
+
+<div class="card">
+ <h2>Savdolar tarixi</h2>
+ <div class="tw"><table>
+  <thead><tr><th>Sana</th><th>TF</th><th>Lot</th><th>Yo'nalish</th><th>Natija</th><th></th></tr></thead>
+  <tbody id="tb"></tbody>
+ </table></div>
+</div>
+</div>
+
+<script>
+const KEY='trade_journal_v1';
+let T=[];
+try{T=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){T=[]}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(T))}catch(e){}};
+const $=id=>document.getElementById(id);
+const fmt=n=>(n>=0?'+':'−')+'$'+Math.abs(n).toFixed(2);
+$('d').valueAsDate=new Date();
+
+function render(){
+  const sorted=[...T].sort((a,b)=>a.d.localeCompare(b.d)||a.id-b.id);
+  const total=T.reduce((s,t)=>s+t.pl,0);
+  const wins=T.filter(t=>t.pl>0).length;
+  const wr=T.length?Math.round(wins/T.length*100):0;
+  const best=T.length?Math.max(...T.map(t=>t.pl)):0;
+  const worst=T.length?Math.min(...T.map(t=>t.pl)):0;
+  const cls=v=>v>0?'up':v<0?'down':'';
+  $('stats').innerHTML=
+   `<div class="card stat"><small>Umumiy natija</small><b class="${cls(total)}">${fmt(total)}</b></div>
+    <div class="card stat"><small>Savdolar</small><b>${T.length}</b></div>
+    <div class="card stat"><small>Win rate</small><b>${wr}%</b></div>
+    <div class="card stat"><small>Eng yaxshi</small><b class="up">${fmt(best)}</b></div>
+    <div class="card stat"><small>Eng yomon</small><b class="down">${fmt(worst)}</b></div>`;
+  $('tb').innerHTML=T.length?[...sorted].reverse().map(t=>
+   `<tr><td>${t.d}</td><td>${t.tf}</td><td>${t.lot}</td><td><span class="tag ${t.s}">${t.s.toUpperCase()}</span></td><td class="${cls(t.pl)}"><b>${fmt(t.pl)}</b></td><td><button class="x" data-id="${t.id}" title="O'chirish">✕</button></td></tr>`).join('')
+   :'<tr><td colspan="6" class="empty">Hali savdo yo\'q. Yuqoridan birinchisini qo\'shing.</td></tr>';
+  // chart
+  let acc=0;const pts=[0,...sorted.map(t=>acc+=t.pl)];
+  if(pts.length<2){$('chart').innerHTML='<div class="empty">Grafik uchun kamida 1 ta savdo kiriting</div>';return}
+  const W=600,H=170,p=10,mn=Math.min(...pts),mx=Math.max(...pts),r=(mx-mn)||1;
+  const xy=pts.map((v,i)=>[p+i*(W-2*p)/(pts.length-1),H-p-(v-mn)/r*(H-2*p)]);
+  const line=xy.map(a=>a.join(',')).join(' ');
+  const zeroY=H-p-(0-mn)/r*(H-2*p);
+  const col=acc>=0?'var(--up)':'var(--down)';
+  $('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+   <line x1="0" x2="${W}" y1="${zeroY}" y2="${zeroY}" stroke="var(--line)" stroke-dasharray="4"/>
+   <polygon points="${p},${H} ${line} ${W-p},${H}" fill="${col}" opacity=".1"/>
+   <polyline points="${line}" fill="none" stroke="${col}" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg>`;
+}
+
+$('f').addEventListener('submit',e=>{
+  e.preventDefault();
+  T.push({id:Date.now(),d:$('d').value,tf:$('tf').value,lot:parseFloat($('lot').value),
+    s:document.querySelector('input[name=s]:checked').value,pl:parseFloat($('pl').value)});
+  save();render();$('lot').value='';$('pl').value='';
+});
+$('tb').addEventListener('click',e=>{
+  const id=e.target.dataset.id;if(!id)return;
+  T=T.filter(t=>t.id!=id);save();render();
+});
+$('clr').addEventListener('click',()=>{
+  if(T.length&&confirm('Barcha savdolar o\'chirilsinmi?')){T=[];save();render()}
+});
+render();
+</script>
+</body>
+</html>
